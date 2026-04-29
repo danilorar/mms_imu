@@ -44,8 +44,8 @@ void kf_callback(const sensor_msgs::msg::Imu::SharedPtr msg)
     if (!initialize){
         last_time = t; 
 
-        roll_ = std::atan2(ay, az);
-        pitch_ = std::atan2(-ax, std::sqrt(ay*ay + az*az));
+        roll_ = 0; 
+        pitch_ = 0;
         yaw_= 0; 
 
         initialize = true; 
@@ -60,28 +60,9 @@ void kf_callback(const sensor_msgs::msg::Imu::SharedPtr msg)
 
 
     // gyro angles (integrate angular velocities)
-    // prediction
-    double roll_gyro = roll_ + wx * dt;
-    double pitch_gyro = pitch_ + wy * dt; 
-    double yaw_gyro = yaw_ + wz * dt; 
-
-    // accelerometer angles
-    // estimate
-    double roll_acc = std::atan2(ay, az);
-    double pitch_acc = std::atan2(-ax, std::sqrt(ay * ay + az * az));
-
-    // sensor fuse
-    roll_ = alpha_ * roll_gyro + (1 - alpha_) * roll_acc;
-    pitch_ = alpha_ * pitch_gyro + (1 - alpha_) * pitch_acc;
-    yaw_ = yaw_gyro;
-
-
-    // publish in Vector3Stamped
-    /**
-     * float64 x
-     * float64 y
-     * float64 z
-     */
+    roll_ += wx * dt;
+    pitch_ += wy * dt ;
+    yaw_ += wz * dt;
 
     out_msg_.header = msg->header;
     out_msg_.vector.x = roll_;

@@ -10,8 +10,8 @@ class ImuFusionNode : public rclcpp::Node
 public:
     ImuFusionNode() : Node("imu_fusion_node")
     {
-        // parameter
-        this->declare_parameter<double>("alpha", 0.98);
+        // alpha
+        this->declare_parameter<double>("alpha", 0.995);
         auto alpha_ = this->get_parameter("alpha").get_value<double>();
 
         using std::placeholders::_1;
@@ -58,30 +58,29 @@ void kf_callback(const sensor_msgs::msg::Imu::SharedPtr msg)
     if (dt <= 0 || dt > 1.0)
         return;
 
-
-    // gyro angles (integrate angular velocities)
-    // prediction
+    // gyro angles predict
     double roll_gyro = roll_ + wx * dt;
     double pitch_gyro = pitch_ + wy * dt; 
     double yaw_gyro = yaw_ + wz * dt; 
 
     // accelerometer angles
-    // estimate
     double roll_acc = std::atan2(ay, az);
     double pitch_acc = std::atan2(-ax, std::sqrt(ay * ay + az * az));
 
-    // sensor fuse
-    roll_ = alpha_ * roll_gyro + (1 - alpha_) * roll_acc;
-    pitch_ = alpha_ * pitch_gyro + (1 - alpha_) * pitch_acc;
+    // accelerometer confidence
+    double acc_norm = std::sqrt(ax*ax + ay*ay + az*az);
+    double acc_error = std::abs(acc_norm - 9.81);
+
+    if (acc_error < 0.1){
+        roll_ = alpha_ * roll_gyro + (1 - alpha_) * roll_acc; 
+        pitch_ = alpha_ * pitch_gyro + (1 - alpha_) * pitch_acc; 
+    }
+    else {
+        roll_ = roll_gyro; // trust only gyro
+        pitch_ = pitch_gyro;
+    }
+
     yaw_ = yaw_gyro;
-
-
-    // publish in Vector3Stamped
-    /**
-     * float64 x
-     * float64 y
-     * float64 z
-     */
 
     out_msg_.header = msg->header;
     out_msg_.vector.x = roll_;

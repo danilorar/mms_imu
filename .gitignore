@@ -1,8 +1,11 @@
+# Python virtual environment
+.venv/
+dataproc/.venv/
+
+# Codex/local assistant files
+.codex/
+
+# ROS2 build artifacts
 build/
 install/
 log/
-*.bag
-*.db3
-*.sqlite3
-__pycache__/
-.vscode/

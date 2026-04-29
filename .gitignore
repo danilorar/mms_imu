@@ -1,0 +1,8 @@
+build/
+install/
+log/
+*.bag
+*.db3
+*.sqlite3
+__pycache__/
+.vscode/

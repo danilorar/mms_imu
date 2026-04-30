@@ -1,9 +1,6 @@
 # IMU data and generated outputs
-dataproc/data/raw/
-dataproc/data/clean/
-dataproc/data/filtered/
-dataproc/data/results/
-dataproc/data/metadata.csv
+dataproc/data/
+dataproc/metadata.csv
 
 # Python
 .venv/

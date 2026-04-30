@@ -1,13 +1,17 @@
 import pandas as pd
 import os
+from pathlib import Path
 from io_utils import kalman_filter
 from metrics import kpis
 from validate_kf import plot_filter_comparison
 
+BASE_DIR = Path(__file__).resolve().parents[1]
+DATA_DIR = BASE_DIR / "data"
+
 # ================
 # == PARAMETERS ==
 # ================
-batch_run = False
+batch_run = True    
 q = 0.001
 r = 0.1
 
@@ -25,7 +29,7 @@ if batch_run== True:
      for maneuver in maneuvers:  
           for setting in settings: 
                for trial in trials: 
-                    csv_input = (f"data/raw/{maneuver}/{setting}/{maneuver}_{setting}_trial{trial:02d}.csv") 
+                    csv_input = (f"{DATA_DIR}/raw/{maneuver}/{setting}/{maneuver}_{setting}_trial{trial:02d}.csv") 
                     
                     print(f"Missing file, skipping: {csv_input}") if not os.path.exists(csv_input) else None
                     print(f"\nProcessing: {csv_input}")
@@ -44,8 +48,8 @@ else: # return print a warning that files exists
 # save in dataframe 
 kpi_df = pd.DataFrame(all_kpis)
 
-os.makedirs("data/results", exist_ok=True)
-kpi_df.to_csv("data/results/kpis.csv", index=False)
+os.makedirs(f"{DATA_DIR}/results", exist_ok=True)
+kpi_df.to_csv(f"{DATA_DIR}/results/kpis.csv", index=False)
 
 print("kpis saved to data/results/kpis.csv")
 

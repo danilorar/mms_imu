@@ -1,24 +1,64 @@
+import pandas as pd
+import os
 from io_utils import kalman_filter
-from key_metrics import noise_metrics
+from metrics import kpis
+from scripts.validate_kf import plot_filter_comparison
 
-# parameters
-batchRun = False
+# ================
+# == PARAMETERS ==
+# ================
+batch_run = False
 q = 0.001
 r = 0.1
 
-# clean and filter
-if batchRun== True:
-     for maneuver in ["acceleration", "braking", "cornering"]:  # for each 3 maneuver and setting loop over trial and apply kalman filter to raw data, save to csv in filtered folder 
-          for setting in ["soft", "medium", "hard"]: 
-               for trial in range(1, 4): 
-                    csv_input = f"data/raw/{maneuver}/{setting}/{maneuver}_{setting}_trial{trial:02d}.csv"
-                    kalman_filter(csv_input, q=q, r=r, save=True)
+# =====================
+# == DATA PROCESSING ==
+# =====================
+maneuvers = ["acceleration", "braking", "cornering"]
+settings = ["soft", "medium", "hard"]
+trials = [1, 2, 3]
+
+all_kpis = []
+
+# filter & save 
+if batch_run== True:
+     for maneuver in maneuvers:  
+          for setting in settings: 
+               for trial in trials: 
+                    csv_input = (f"data/raw/{maneuver}/{setting}/{maneuver}_{setting}_trial{trial:02d}.csv") 
                     
-elif batchRun== False:
-     # example for one file
-     csv_input = "data/raw/braking/soft/braking_soft_trial01.csv"
-     kalman_filter(csv_input, q=q, r=r, save=True)
+                    print(f"Missing file, skipping: {csv_input}") if not os.path.exists(csv_input) else None
+                    print(f"\nProcessing: {csv_input}")
+                    
+                    # filter 
+                    imu_kf = kalman_filter(csv_input, q=q, r=r, save=True)
+                    
+                    # store kpi
+                    kpi_row = kpis(imu_kf, maneuver, setting, trial)
+                    all_kpis.append(kpi_row)
+
+else: # return print a warning that files exists 
+     print("Set batch_run=True to process all files.")
+     
+
+# save in dataframe 
+kpi_df = pd.DataFrame(all_kpis)
+
+os.makedirs("data/results", exist_ok=True)
+kpi_df.to_csv("data/results/kpis.csv", index=False)
+
+print("kpis saved to data/results/kpis.csv")
 
 
-# key metrics 
+# =========================
+# == DATA VISUALIZATION ===
+# =========================
 
+# filter validation for one ex
+plot_filter_comparison(
+         maneuver="cornering",
+         setting="hard",
+         trial=1,
+         signal="wz",
+         save=False
+     )

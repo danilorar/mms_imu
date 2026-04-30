@@ -2,7 +2,7 @@ import pandas as pd
 import os
 from io_utils import kalman_filter
 from metrics import kpis
-from scripts.validate_kf import plot_filter_comparison
+from validate_kf import plot_filter_comparison
 
 # ================
 # == PARAMETERS ==

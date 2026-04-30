@@ -39,7 +39,7 @@ EOF
 
 # Create working metadata.csv only if it does not already exist
 if [ ! -f data/metadata.csv ]; then
-  cp metadata.csv data/metadata.csv
+  mv metadata.csv data/metadata.csv
 fi
 
 echo "Data folder structure created."

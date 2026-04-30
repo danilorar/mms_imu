@@ -1,0 +1,21 @@
+# IMU data and generated outputs
+dataproc/data/raw/
+dataproc/data/clean/
+dataproc/data/filtered/
+dataproc/data/results/
+dataproc/data/metadata.csv
+
+# Python
+.venv/
+dataproc/.venv/
+__pycache__/
+*.pyc
+
+# ROS2
+build/
+install/
+log/
+
+# Editor
+.vscode/
+dataproc/.vscode/

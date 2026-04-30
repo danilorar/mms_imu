@@ -2,20 +2,22 @@
 import os
 from os import path
 import shutil 
-from matplotlib.path import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def load_and_compress(maneuver, setting, trial, stage, data_dir="data/"):
+from pathlib import Path
 
-    path = os.path.join(f"{data_dir}/{stage}/{maneuver}/{setting}/"f"{maneuver}_{setting}_trial{trial:02d}.csv")
-    df = pd.read_csv(path)    
+BASE_DIR = Path(__file__).resolve().parents[1]
+DATA_DIR = BASE_DIR / "data"
+
+def load_and_compress(maneuver, setting, trial, stage, data_dir="data/"):
+     path = (DATA_DIR/stage/maneuver/setting/f"{maneuver}_{setting}_trial{trial:02d}.csv")
+     df = pd.read_csv(path)    
     
     # remove repeated timestamps by averaging values at same timestamp
-    df = df.groupby("t", as_index=False).mean()
-
-    return df
+     df = df.groupby("t", as_index=False).mean()
+     return df
 
 def moving_average(df, signal, window=25): 
      return df[signal].rolling(window=window, center=True, min_periods=1).mean()

@@ -42,7 +42,11 @@ chmod +x create_data_dirs.sh
 
 ### Add data
 
-Download the logger CSV files from `opendlv.io`.
+Download the logger CSV files from `opendlv.io` using: 
+```bash
+chmod +x extract_csv.sh 
+./extract_csv.sh 
+```
 
 The downloaded files will look like:
 
@@ -53,7 +57,7 @@ ts_1747044550.csv
 ...
 ```
 
-Place all downloaded files in:
+All downloaded files are in:
 
 ```text
 data/raw/inbox/

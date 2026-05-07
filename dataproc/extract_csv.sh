@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 BASE_URL="https://opendlv.io/46nenaw0yc"
-OUT_DIR="dataproc/data/raw/inbox"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OUT_DIR="$SCRIPT_DIR/data/raw/inbox"
 
 mkdir -p "$OUT_DIR"
 

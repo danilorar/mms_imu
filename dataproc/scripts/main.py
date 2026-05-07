@@ -4,6 +4,9 @@ from pathlib import Path
 from io_utils import kalman_filter
 from metrics import kpis
 from validate_kf import plot_filter_comparison
+from prepare_raw import prepare_raw
+
+prepare_raw()
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = BASE_DIR / "data"

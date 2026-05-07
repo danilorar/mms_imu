@@ -193,7 +193,7 @@ private:
         }
 
         return closest_index;
-    }
+        }
 };
 
 int main(int argc, char * argv[])

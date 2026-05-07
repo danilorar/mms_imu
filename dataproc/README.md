@@ -109,7 +109,6 @@ trial: 1, 2, 3
 From inside `dataproc/`:
 
 ```bash
-python3 scripts/prepare_raw.py
 python3 scripts/main.py
 ```
 

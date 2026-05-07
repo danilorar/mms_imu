@@ -25,15 +25,11 @@ add_executable(model_predictor_node src/model_pred_node.cpp src/bicycle_model.cp
 ament_target_dependencies(model_predictor_node rclcpp std_msgs)
 target_link_libraries(model_predictor_node Eigen3::Eigen)
 
-add_executable(lateral_kf_node src/lateral_kf_node.cpp src/bicycle_model.cpp)
-ament_target_dependencies(lateral_kf_node rclcpp std_msgs sensor_msgs)
-target_link_libraries(lateral_kf_node Eigen3::Eigen)
 
 install(TARGETS 
 imu_kf_node
 kf_angles
 model_predictor_node
-lateral_kf_node
  DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY include/

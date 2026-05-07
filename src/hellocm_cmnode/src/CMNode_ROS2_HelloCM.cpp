@@ -274,20 +274,34 @@ int CMNodeHelloCM::userVehicleControlCalc(const double& dt)
     }
 
     if (CMNode.VC.use_vc == true) {
-            
-        /* Assign ROS Topic to CM Vehicle Control Quantities */
-        /* -->Automatic transmission PRNDL selection */
-        VehicleControl.SelectorCtrl     = CMNode.VC.selector_ctrl;
+          
+        // /* Assign ROS Topic to CM Vehicle Control Quantities */
+        // /* -->Automatic transmission PRNDL selection */
+        // VehicleControl.SelectorCtrl     = CMNode.VC.selector_ctrl;
 
-        /* -->Pedal Positions (add clutch if needed for manual) */
-        VehicleControl.Gas              = CMNode.VC.gas;
-        VehicleControl.Brake            = CMNode.VC.brake;
+        // /* -->Pedal Positions (add clutch if needed for manual) */
+        // VehicleControl.Gas              = CMNode.VC.gas;
+        // VehicleControl.Brake            = CMNode.VC.brake;
 
-        /* -->Steer by angle inputs (add steer torque if using GenTorque model) */
-        VehicleControl.Steering.Ang     = CMNode.VC.steer_ang;
-        VehicleControl.Steering.AngVel  = CMNode.VC.steer_ang_vel; 
-        VehicleControl.Steering.AngAcc  = CMNode.VC.steer_ang_acc;
-        // VehicleControl.Steering.Trq = CMNode.VC.steer_trq       // Instead of Steer velocity and Acceleration, steering torque can be given as input
+        // /* -->Steer by angle inputs (add steer torque if using GenTorque model) */
+        // VehicleControl.Steering.Ang     = CMNode.VC.steer_ang;
+        // VehicleControl.Steering.AngVel  = CMNode.VC.steer_ang_vel; 
+        // VehicleControl.Steering.AngAcc  = CMNode.VC.steer_ang_acc;
+        // // VehicleControl.Steering.Trq = CMNode.VC.steer_trq       // Instead of Steer velocity and Acceleration, steering torque can be given as input
+
+        // placeholder for light control based on steering and brake inputs
+        
+        // keep Driver Model longitudinal control
+        VehicleControl.SelectorCtrl = DrivMan.SelectorCtrl;
+        VehicleControl.Gas = DrivMan.Gas;
+        VehicleControl.Brake = DrivMan.Brake;
+
+        // use ROS only for steering
+        VehicleControl.Steering.Ang = CMNode.VC.steer_ang;
+        VehicleControl.Steering.AngVel = CMNode.VC.steer_ang_vel;
+        VehicleControl.Steering.AngAcc = CMNode.VC.steer_ang_acc;
+
+        // end placeholder
 
         if (CMNode.VC.steer_ang < 0.1) {
           VehicleControl.Lights.IndL = 1;

@@ -1,4 +1,4 @@
-#include <kf_node/kf_noise.hpp>
+#include <kf_noise.hpp>
 
 using std::placeholders::_1; 
 
@@ -19,7 +19,6 @@ imuKF::imuKF(const std::string &name) : Node(name), initialized(false)
     Q = q * Eigen::MatrixXd::Identity(6, 6);
     R = r * Eigen::MatrixXd::Identity(6,6);
     
-
     imu_sub_ = create_subscription<sensor_msgs::msg::Imu>("/carmaker/imu", 10, std::bind(&imuKF::imu_callback, this, _1));
     kf_pub_ = create_publisher<sensor_msgs::msg::Imu>("/carmaker/kf_imu", 10);
 

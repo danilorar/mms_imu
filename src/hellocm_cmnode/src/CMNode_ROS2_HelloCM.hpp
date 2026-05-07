@@ -45,6 +45,7 @@
 #include "Vehicle/Sensor_RadarRSI.h"
 #include "Vehicle/Sensor_USonicRSI.h"
 #include <Vehicle/Sensor_GroundTruth.h>
+#include "std_msgs/msg/float64.hpp"
 
 /* ROS */
 #include "cmrosutils/cmrosif.hpp"                   /* Only for CarMaker ROS Node!!! Functions are located in library for CarMaker ROS Interface */
@@ -258,7 +259,12 @@ class CMNodeHelloCM : public CarMakerROSInterface {
    */
 
   void RadarFillMsg(geometry_msgs::msg::PoseArray &msg);
-  
+
+  // steering wheel callback
+  void SteeringFillMsg(std_msgs::msg::Float64 &msg);
+
+  // longitudinal speed callback
+  void SpeedFillMsg(std_msgs::msg::Float64 &msg);
   /**
    * @brief UltrasonicFillMsg prepares the message of Ultrasonic data 
    * to be transmitted from CarMaker over ROS.

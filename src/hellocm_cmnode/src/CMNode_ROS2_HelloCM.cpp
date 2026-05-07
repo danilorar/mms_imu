@@ -775,35 +775,49 @@ void CMNodeHelloCM::cm2extFillMsg(hellocm_msgs::msg::CM2Ext& msg) {
   msg.time = rclcpp::Time(static_cast<int64_t>(1e9 * SimCore.Time), RCL_ROS_TIME);
   msg.synthdelay = synth_delay_;
   msg.header.stamp = rclcpp::Clock().now();
+};
+
+// steering wheel angle
+void CMNodeHelloCM::SteeringFillMsg(std_msgs::msg::Float64 &msg)
+{
+  msg.data = VehicleControl.Steering.Ang;
 }
 
-/*!
- * Important:
- * - DO NOT CHANGE FUNCTION NAME !!!
- * - Automatically called by CMRosIF extension
- *
- * Description:
- * - Add user specific Quantities for data storage
- *   and visualization to DataDictionary
- * - Called once at program start
- * - no realtime conditions
- *
- */
-void CMNodeHelloCM::userDeclQuants(void) {
+// longitudinal speed
+void CMNodeHelloCM::SpeedFillMsg(std_msgs::msg::Float64 &msg)
+{
+  msg.data = Vehicle.v;
+}
 
-    tDDefault *df = DDefaultCreate("CMRosIF.");
+    /*!
+     * Important:
+     * - DO NOT CHANGE FUNCTION NAME !!!
+     * - Automatically called by CMRosIF extension
+     *
+     * Description:
+     * - Add user specific Quantities for data storage
+     *   and visualization to DataDictionary
+     * - Called once at program start
+     * - no realtime conditions
+     *
+     */
+    void
+    CMNodeHelloCM::userDeclQuants(void)
+{
 
-    DDefULong   (df, "CycleNoRel",         "ms",  &rel_cycle_num_,              DVA_None);
-    DDefInt     (df, "Sync.Cycles",        "-",   &CMNode.Sync.nCycles,         DVA_None);
-    DDefDouble  (df, "Sync.Time",          "s",   &CMNode.Sync.Duration,        DVA_None);
-    DDefDouble4 (df, "Sync.SynthDelay",    "s",   &synth_delay_,                DVA_IO_In);
+  tDDefault *df = DDefaultCreate("CMRosIF.");
 
-    DDefUChar   (df, "Cfg.Mode",           "-",   (unsigned char*)&node_mode_,  DVA_None);
-    DDefInt     (df, "Cfg.nCyclesClock",   "ms",  &clock_cycle_time_,           DVA_None);
-    DDefChar    (df, "Cfg.SyncMode",       "-",   (char*)&sync_mode_,           DVA_None);
-    DDefDouble4 (df, "Cfg.SyncTimeMax",    "s",   &max_sync_time_,              DVA_IO_In);
+  DDefULong(df, "CycleNoRel", "ms", &rel_cycle_num_, DVA_None);
+  DDefInt(df, "Sync.Cycles", "-", &CMNode.Sync.nCycles, DVA_None);
+  DDefDouble(df, "Sync.Time", "s", &CMNode.Sync.Duration, DVA_None);
+  DDefDouble4(df, "Sync.SynthDelay", "s", &synth_delay_, DVA_IO_In);
 
-    DDefaultDelete(df);
+  DDefUChar(df, "Cfg.Mode", "-", (unsigned char *)&node_mode_, DVA_None);
+  DDefInt(df, "Cfg.nCyclesClock", "ms", &clock_cycle_time_, DVA_None);
+  DDefChar(df, "Cfg.SyncMode", "-", (char *)&sync_mode_, DVA_None);
+  DDefDouble4(df, "Cfg.SyncTimeMax", "s", &max_sync_time_, DVA_IO_In);
+
+  DDefaultDelete(df);
 }
 
 int CMNodeHelloCM::userTestrunStartAtBegin() {
@@ -903,6 +917,26 @@ int CMNodeHelloCM::userTestrunStartAtBegin() {
     scheduler_.addJob(job);
   };
   
+ // ====== STEEERING ANGLE ======
+ {
+   typedef CMJob::RosPublisher<std_msgs::msg::Float64> Steering_t;
+   auto job = std::make_shared<Steering_t>(nhp_, "steering_angle");
+   job->setCycleTime(100);
+   job->setCycleOffset(0);
+   job->registerCallback(&CMNodeHelloCM::SteeringFillMsg, this);
+   scheduler_.addJob(job);
+ }
+
+ // ====== SPEED ======
+ {
+   typedef CMJob::RosPublisher<std_msgs::msg::Float64> Speed_t;
+   auto job = std::make_shared<Speed_t>(nhp_, "speed");
+   job->setCycleTime(100);
+   job->setCycleOffset(0);
+   job->registerCallback(&CMNodeHelloCM::SpeedFillMsg, this);
+   scheduler_.addJob(job);
+}
+
   /* Read sensor info from Vehicle InfoFile */
   tInfos *Inf_Vehicle = nullptr;
   Inf_Vehicle = InfoNew();
@@ -1323,6 +1357,8 @@ int CMNodeHelloCM::userTestrunEnd() {
   scheduler_.deleteJob("ground_truth");
   scheduler_.deleteJob("PointCloud2_Radar");
   scheduler_.deleteJob("radar_objects");
+  scheduler_.deleteJob("steering_angle");
+  scheduler_.deleteJob("speed");
   scheduler_.deleteJob("Range");
   
   return 1;

@@ -79,4 +79,51 @@ def detect_trials(imu, maneuver):
 # split trials into dataframe for post analysis 
 def split_trials(data, start, end): 
     return data[(data["t"] >= start) & (data["t"] <= end)].copy()
+
+
+# track geometry lenght and radius for carmaker
+def path_length(gps):
+    dx = np.diff(gps["x"].values)
+    dy = np.diff(gps["y"].values)
+
+    return np.sqrt(dx**2 + dy**2).sum()
+
+def path_radius(gps): 
+    x = gps["x"].values
+    y = gps["y"].values
+    
+    xc = (x.max() + x.min()) / 2
+    yc = (y.max() + y.min()) / 2
+    radius = np.sqrt((x - xc)**2 + (y - yc)**2)
+    
+    return radius.mean()
+
+if __name__ == "__main__":
+    
+    # track geometry
+    data = pd.read_csv("data/filtered/acc_brake/soft/acc_brake_soft_trial01.csv")
+    gps = data[data["sensor"] == "gps"].copy()
+    gps = gps[gps["v_kmh"] > 5]
+    
+    # radius
+    R = path_radius(gps)
+    print(f"Track radius: {R:.2f} m")
+    
+    # length
+    l = path_length(gps)
+    print(f"Track length: {l:.2f} m")
+    
+    # plot 
+    import matplotlib.pyplot as plt
+    
+    plt.figure()
+    plt.plot(gps["x"], gps["y"])
+    plt.xlabel("x (m)");plt.ylabel("y (m)")
+    plt.axis("equal")
+    plt.grid()
+    plt.show()  
+    
+
+            
+    
     

@@ -40,17 +40,17 @@ def main():
 if __name__ == "__main__":
     main()
     
-    # filter comparison 
+    # plt
     plot_filter_comparison(
         maneuver="cornering",
         setting="soft",
         trial=1,
-        signal="ax",
-    )
+        signal="ay",
+        title=f"Kalman Filter (q={q}, r={r})")
     
     plot_trials(
         csv_file="data/raw/cornering/soft/cornering_soft_trial01.csv",
-        title="cornering_soft_trial01")
+        title="")
     
     
 

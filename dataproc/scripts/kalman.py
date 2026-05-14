@@ -1,5 +1,6 @@
 import pandas as pd
 from pathlib import Path
+from kalman_plot import plot_filter_comparison
 
 BASE_DIR = Path(__file__).parent.parent
 DATA_DIR = BASE_DIR / "data"
@@ -52,8 +53,17 @@ def kalman_filter(csv_path_input, q, r):
 
 
 if __name__ == "__main__":
-        kalman_filter(
-        csv_path_input="data/raw/cornering/soft/cornering_soft_trial01.csv",
-        q=0.001,
-        r=0.1,
-    )
+    
+    # tune kalman parameters:
+    weights= [(0.0001, 0.5), (0.001, 0.1), (0.01, 0.05)]
+    
+    for q, r in weights:
+        print(f"Testing q={q}, r={r}")
+        kalman_filter(csv_path_input="data/raw/cornering/soft/cornering_soft_trial01.csv",q=q, r=r)
+        plot_filter_comparison(
+            maneuver="cornering",
+            setting="soft",
+            trial=1,
+            signal="v_kmh",
+            title=f"q={q}, r={r}"
+        )

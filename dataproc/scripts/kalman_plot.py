@@ -41,7 +41,7 @@ def moving_average(df, signal, window=5):
     return df[signal].rolling(window=window, center=True, min_periods=1).mean()
 
 
-def plot_filter_comparison(maneuver, setting, trial, signal):
+def plot_filter_comparison(maneuver, setting, trial, signal, title):
     
     # load csv data for raw and filtered signals
     raw = load_signal(maneuver, setting, trial, stage="raw", signal=signal)
@@ -83,15 +83,8 @@ def plot_filter_comparison(maneuver, setting, trial, signal):
     plt.title(f"{signal} residual histogram")
     plt.xlabel(f"{signal} residual")
     plt.grid(True)
-    plt.suptitle(f"{maneuver} - {setting} - Trial {trial:02d}", fontsize=15)
+    plt.suptitle(title + f" - {maneuver} - {setting} - Trial {trial:02d}", fontsize=15)    
+    
     plt.tight_layout()
     plt.show()
-
-    
-if __name__ == "__main__":
-    plot_filter_comparison(
-        maneuver="cornering",
-        setting="soft",
-        trial=1,
-        signal="ax",
-    )
+   

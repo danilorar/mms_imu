@@ -3,8 +3,6 @@ from pathlib import Path
 from kalman import kalman_filter
 from kalman_plot import plot_filter_comparison
 from plot_data import plot_trials
-from load_data import load_imu
-from trial_detection import detect_trials
 from prepare_raw import prepare_raw
 
 

@@ -1,8 +1,37 @@
 import os
 import pandas as pd
+import folium
 import matplotlib.pyplot as plt
 from load_data import load_imu
 from trial_detection import detect_trials
+
+
+# plot gps map using 
+def gps_map(gps, out_file=""):
+    
+    # coordinates for folium map
+    coords = list(zip(gps["lat"], gps["lon"]))
+    map = folium.Map(location=[gps["lat"].mean(), gps["lon"].mean()], zoom_start=18) 
+
+    # plot gps path
+    folium.TileLayer(
+        tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        attr="Esri World Imagery",
+        name="Satellite",
+        overlay=False,
+        control=True
+    ).add_to(map)
+    
+    folium.PolyLine(coords).add_to(map)
+    
+    # add start and end markers to map
+    folium.Marker(coords[0], tooltip="Start").add_to(map)
+    folium.Marker(coords[-1], tooltip="End").add_to(map)
+    
+    # save as html
+    folium.LayerControl().add_to(map)
+    map.save(out_file)
+
 
 # reset_index used to align indices, besides gps
 def plot_trials(csv_file , runs=None, title=""):
@@ -58,9 +87,15 @@ def plot_trials(csv_file , runs=None, title=""):
     plt.legend()
     plt.grid(True)
 
-    # GPS path
+    # GPS path in function of speed
     plt.subplot(2, 2, 4)
-    plt.plot(gps["x"], gps["y"], label="GPS path")
+    plt.plot(gps["x"], gps["y"], label="GPS path", color="lightgrey", alpha=0.5)
+    
+    # colorbar speed
+    plt.scatter(gps["x"], gps["y"], c=gps["v_kmh"], cmap="jet", label="GPS path") 
+    cbar = plt.colorbar()
+    cbar.set_label("Speed [km/h]")
+    
     plt.title("GPS path")
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
@@ -68,20 +103,18 @@ def plot_trials(csv_file , runs=None, title=""):
     plt.legend()
     plt.grid(True)
 
+    # show
     plt.suptitle(title)
     plt.tight_layout()
     plt.show()
+    
+    # plot gps map (html)
+    gps_map(gps, out_file="gps_map.html")
+    
 
 
 if __name__ == "__main__":
-    # one separated trial
     plot_trials(
-        "data/raw/cornering/hard/cornering_hard_trial02.csv",
-        title=""
+        csv_file="data/raw/acc_brake/medium/acc_brake_medium_trial04.csv"
     )
-
-    # full original log
-    plot_trials(
-        "data/raw/opendlv/ts_1778673001.csv",
-        title="all"
-    )
+    

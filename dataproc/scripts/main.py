@@ -12,7 +12,6 @@ DATA_DIR = BASE_DIR / "data"
 # ==================
 # === PARAMETERS ===
 # ==================
-batch_run = False
 q = 0.001
 r = 0.1
 RUN_PREPARE_RAW = False

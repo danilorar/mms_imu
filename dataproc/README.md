@@ -2,7 +2,7 @@
 
 This folder contains the IMU data processing pipeline used for the suspension test data.
 
-The goal is to compare different suspension settings using IMU data collected during driving maneuvers.
+Our goal is to compare different suspension settings using IMU data collected during driving maneuvers.
 
 ---
 

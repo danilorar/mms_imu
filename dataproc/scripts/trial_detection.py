@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 
-# detect cornering trials 
+# detect cornering trials based on speed thereshold and duration
 def detect_cornering(gps, speed_min=5, min_duration=10, padding=5):
     moving = gps["v_kmh"] > speed_min
 
@@ -32,6 +32,7 @@ def detect_cornering(gps, speed_min=5, min_duration=10, padding=5):
 
     return runs
 
+# detect acceleration/braking trials based on speed peaks and duration 
 def detect_acc_brake(gps, high_speed=60, low_speed=5, padding=5): 
     high = gps["v_kmh"] > high_speed
 

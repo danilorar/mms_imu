@@ -12,8 +12,8 @@ DATA_DIR = BASE_DIR / "data"
 # ==================
 # === PARAMETERS ===
 # ==================
-q = 0.001
-r = 0.1
+q = 0.0001 # 0.001
+r = 1.2    # 0.100
 RUN_PREPARE_RAW = False
 RUN_KALMAN = False
 
@@ -39,16 +39,15 @@ def main():
 if __name__ == "__main__":
     main()
     
-    # plt
     plot_filter_comparison(
-        maneuver="cornering",
+        maneuver="acc_brake",
         setting="soft",
-        trial=1,
-        signal="ay",
+        trial=3,
+        signal="az",
         title=f"Kalman Filter (q={q}, r={r})")
     
     plot_trials(
-        csv_file="data/raw/cornering/soft/cornering_soft_trial01.csv",
+        csv_file="data/raw/acc_brake/soft/acc_brake_soft_trial03.csv",
         title="")
     
     

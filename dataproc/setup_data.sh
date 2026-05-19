@@ -21,6 +21,7 @@ FILES=(
 # create directories 
 mkdir -p "$INBOX_DIR"
 mkdir -p "$DATA_DIR/filtered"
+mkdir -p "$DATA_DIR/cm"
 #mkdir -p "$DATA_DIR/results"
 
 # create metadata.csv

@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from load_data import load_imu
 from trial_detection import detect_trials
 
-
 # plot gps map using 
 def gps_map(gps, out_file=""):
     
@@ -112,9 +111,66 @@ def plot_trials(csv_file , runs=None, title=""):
     gps_map(gps, out_file="gps_map.html")
     
 
+def plot_cm(cm_files, real_files, cm_signal, real_signal, normalize_time=True, labels=["", ""]):
+    
+
+    fig, axes = plt.subplots(2, 1, figsize=(12, 9), sharex=False)
+    fig.suptitle(f"CarMaker vs Real - {real_signal}")
+
+    for cm_file, real_file, label in zip(cm_files, real_files, labels):
+        cm = pd.read_csv(cm_file)
+        real = pd.read_csv(real_file)
+
+        cm_t = cm["Time [s]"] - cm["Time [s]"].iloc[0]
+        real_t = real["t"] - real["t"].iloc[0]
+
+        if normalize_time:
+            cm_t = cm_t / cm_t.max()
+            real_t = real_t / real_t.max()
+            xlabel = "Normalized time [-]"
+        else:
+            xlabel = "Time [s]"
+
+        axes[0].plot(cm_t, cm[cm_signal], label=label)
+        axes[1].plot(real_t, real[real_signal], label=label)
+        axes[1].plot(cm_t, cm[cm_signal], label="Real", alpha=0.5, linestyle="--")
+
+    axes[0].set_title("CarMaker")
+    axes[0].set_ylabel(cm_signal)
+    axes[0].grid(True)
+    axes[0].legend()
+
+    axes[1].set_title("filtered data")
+    axes[1].set_xlabel(xlabel)
+    axes[1].set_ylabel(real_signal)
+    axes[1].grid(True)
+    axes[1].legend()
+    
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
+    
     plot_trials(
-        csv_file="data/raw/acc_brake/medium/acc_brake_medium_trial04.csv"
+        csv_file="data/raw/opendlv/ts_1778674201.csv",
+        title="all"
     )
     
+    cm_files = [
+        "data/carmaker/acc_brake_soft.csv",
+        "data/carmaker/acc_brake_medium.csv",
+        "data/carmaker/acc_brake_hard.csv",
+    ]
+
+    real_files = [
+        "data/filtered/acc_brake/soft/acc_brake_soft_trial01.csv",
+        "data/filtered/acc_brake/medium/acc_brake_medium_trial01.csv"
+    ]
+
+    # plot_cm(
+    #     cm_files=cm_files,
+    #     real_files=real_files,
+    #     cm_signal="Speed [km/h]",
+    #     real_signal="v_kmh",
+    #     labels=["soft","hard"]
+    # )

@@ -64,6 +64,6 @@ if __name__ == "__main__":
             maneuver="cornering",
             setting="soft",
             trial=1,
-            signal="ay",
+            signal="az",
             title=f"q={q}, r={r}"
         )

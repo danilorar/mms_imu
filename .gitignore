@@ -4,6 +4,7 @@ venv/
 dataproc/.venv/
 **/__pycache__/
 *.pyc
+data/
 
 # ROS2
 build/

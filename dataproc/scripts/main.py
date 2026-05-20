@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from kalman import kalman_filter
-from scripts.plot_kalman import plot_filter_comparison
+from plot_kalman import plot_filter_comparison
 from plot_data import plot_trials
 from prepare_raw import prepare_raw
 
@@ -14,8 +14,8 @@ DATA_DIR = BASE_DIR / "data"
 # ==================
 q = 0.0001 # 0.001
 r = 1.2    # 0.100
-RUN_PREPARE_RAW = False
-RUN_KALMAN = False
+RUN_PREPARE_RAW = True
+RUN_KALMAN = True
 
 # =================
 # === MAIN LOOP ===

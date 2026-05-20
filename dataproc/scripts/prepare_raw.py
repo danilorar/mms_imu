@@ -41,7 +41,6 @@ def prepare_raw():
             print(f"Source file {source_path} does not exist. Skipping.")
             continue 
          
-        
         data = load_imu(source_path)
         runs = detect_trials(data, maneuver)   
         print(f"Detected {len(runs)} in: {setting}, {maneuver}")

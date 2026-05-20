@@ -115,42 +115,64 @@ def plot_trials(csv_file , runs=None, title=""):
     gps_map(gps, out_file="gps_map.html")
     
 
-def plot_cm(cm_files, real_files, cm_signal, real_signal, normalize_time=True, labels=["", ""]):
+def plot_cm(cm_files, real_files, cm_signal, real_signal, labels=["", ""]):
     
     fig, axes = plt.subplots(2, 1, figsize=(12, 9), sharex=False)
     fig.suptitle(f"CarMaker vs Real - {real_signal}")
 
     for cm_file, real_file, label in zip(cm_files, real_files, labels):
+        
+        # import data 
         cm = pd.read_csv(cm_file)
         real = pd.read_csv(real_file)
 
-        cm_t = cm["Time [s]"] - cm["Time [s]"].iloc[0]
-        real_t = real["t"] 
+        cm_t = cm["Time [s]"]
+        cm_real = real["t"]
+        
+        # cm vs real
+        axes[0].plot(cm_t ,cm[cm_signal], label=label)
+        axes[1].plot(cm_real, real[real_signal], label=label)
+        
+        axes[1].plot(cm_t, cm[cm_signal], label="Carmaker", alpha=0.5, linestyle="--") # cm vs real
 
-        if normalize_time:
-            cm_t = cm_t / cm_t.max()
-            real_t = real_t / real_t.max()
-            xlabel = "Normalized time [-]"
-        else:
-            xlabel = "Time [s]"
+        axes[0].set_title("CarMaker")
+        axes[0].set_ylabel(cm_signal)
+        axes[0].grid(True)
+        axes[0].legend()
 
-        axes[0].plot(cm_t, cm[cm_signal], label=label)
-        axes[1].plot(real_t,real[real_signal], label=label)
-        #axes[1].plot(cm_t, cm[cm_signal], label="Carmaker", alpha=0.5, linestyle="--")
-
-    axes[0].set_title("CarMaker")
-    axes[0].set_ylabel(cm_signal)
-    axes[0].grid(True)
-    axes[0].legend()
-
-    axes[1].set_title("filtered data")
-    axes[1].set_xlabel(xlabel)
-    axes[1].set_ylabel(real_signal)
-    axes[1].grid(True)
-    axes[1].legend()
+        axes[1].set_title("filtered data")
+        axes[1].set_xlabel("Time [s]")
+        axes[1].set_ylabel(real_signal)
+        axes[1].grid(True)
+        axes[1].legend()
     
-    plt.tight_layout()
-    plt.show()
+        plt.tight_layout()
+        plt.show()
 
+if __name__ == "__main__":   
+    pass
 
+    plot_trials(
+        csv_file="data/filtered/cornering/hard/cornering_hard_trial02.csv",
+        title=""
+    )
+    
+    # cm_files = [
+    #     "data/carmaker/acc_brake_soft.csv",
+    #     "data/carmaker/acc_brake_medium.csv",
+    #     "data/carmaker/acc_brake_hard.csv",
+    # ]
+
+    # real_files = [
+    #     "data/filtered/cornering/soft/cornering_soft_trial01.csv",
+    #     "data/filtered/cornering/hard/cornering_hard_trial01.csv"
+    # ]
+
+    # plot_cm(
+    #     cm_files=cm_files,
+    #     real_files=real_files,
+    #     cm_signal="IMU ax [m/s²]",
+    #     real_signal="ay",
+    #     labels=["soft","medium"]
+    # )
     

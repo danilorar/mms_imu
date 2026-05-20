@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from kalman import kalman_filter
-from kalman_plot import plot_filter_comparison
+from scripts.plot_kalman import plot_filter_comparison
 from plot_data import plot_trials
 from prepare_raw import prepare_raw
 

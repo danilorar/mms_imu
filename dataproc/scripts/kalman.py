@@ -1,6 +1,6 @@
 import pandas as pd
 from pathlib import Path
-from kalman_plot import plot_filter_comparison
+from plot_kalman import plot_filter_comparison
 
 BASE_DIR = Path(__file__).parent.parent
 DATA_DIR = BASE_DIR / "data"

@@ -17,7 +17,7 @@ def gps_to_xy(gps):
     return x, y
 
 
-def load_imu(csv_path_input, save=False):
+def load_imu(csv_path_input):
     """
     0 = GPS
     1 = accelerometer
@@ -61,13 +61,23 @@ def load_imu(csv_path_input, save=False):
     ).astype(float)
 
     gps_raw["x"], gps_raw["y"] = gps_to_xy(gps_raw) 
+ 
+    # guard to ensure timestamps sorted and in seconds 
+    acc_raw["timestamp"] = acc_raw["time"] + acc_raw["idx"] / 1e6
+    gyro_raw["timestamp"] = gyro_raw["time"] + gyro_raw["idx"] / 1e6
+    gps_raw["timestamp"] = gps_raw["time"]
+    
+    acc_raw = acc_raw.sort_values("timestamp").reset_index(drop=True)
+    gyro_raw = gyro_raw.sort_values("timestamp").reset_index(drop=True)
+    gps_raw = gps_raw.sort_values("timestamp").reset_index(drop=True)
+    
+    # common reference time
+    t0 = min(acc_raw["timestamp"].min(), gyro_raw["timestamp"].min(),gps_raw["timestamp"].min())
 
-    # common time reference
-    t0 = acc_raw["time"].iloc[0]
-
-    acc_raw["t"] = acc_raw["time"] - t0
-    gyro_raw["t"] = gyro_raw["time"] - t0
-    gps_raw["t"] = gps_raw["time"] - t0
+    # relative time
+    acc_raw["t"] = acc_raw["timestamp"] - t0
+    gyro_raw["t"] = gyro_raw["timestamp"] - t0
+    gps_raw["t"] = gps_raw["timestamp"] - t0
 
     # combine into one dataframe imu based on "sensor"
     acc = pd.DataFrame({
@@ -102,6 +112,17 @@ def load_imu(csv_path_input, save=False):
     })
 
     imu = pd.concat([acc, gyro, gps], ignore_index=True)
-
+    
     return imu
 
+if __name__ == "__main__":
+    
+    from plot_data import plot_trials
+    import matplotlib.pyplot as plt
+    # plt data to see if imu_data is correct 
+    
+    input_csv = "data/raw/opendlv/ts_1778675255.csv"
+    load_imu(input_csv)
+    
+    plot_trials(input_csv, title="all") 
+    plt.show()

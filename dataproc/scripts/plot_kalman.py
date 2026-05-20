@@ -88,3 +88,4 @@ def plot_filter_comparison(maneuver, setting, trial, signal, title):
     plt.tight_layout()
     plt.show()
    
+   

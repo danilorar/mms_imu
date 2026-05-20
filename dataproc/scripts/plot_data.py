@@ -41,7 +41,6 @@ def plot_trials(csv_file , runs=None, title=""):
         
     maneuver = "acc_brake" if "acc_brake" in csv_file else "cornering"
     
-    
     acc = data[data["sensor"] == "acc"]
     gyro = data[data["sensor"] == "gyro"]
     gps = data[data["sensor"] == "gps"]
@@ -50,9 +49,11 @@ def plot_trials(csv_file , runs=None, title=""):
 
     # accelerometer
     plt.subplot(2, 2, 1)
-    plt.plot(acc["ax"].reset_index(drop=True), label="ax")
-    plt.plot(acc["ay"].reset_index(drop=True), label="ay")
-    plt.plot(acc["az"].reset_index(drop=True), label="az")
+  
+    plt.plot(acc["t"], acc["ax"], label="ax")
+    plt.plot(acc["t"], acc["ay"], label="ay")
+    plt.plot(acc["t"], acc["az"], label="az")
+    
     plt.title("Accelerometer")
     plt.xlabel("Time [s]")
     plt.ylabel("m/s²")
@@ -61,9 +62,10 @@ def plot_trials(csv_file , runs=None, title=""):
 
     # gyroscope
     plt.subplot(2, 2, 2)
-    plt.plot(gyro["wx"].reset_index(drop=True), label="wx")
-    plt.plot(gyro["wy"].reset_index(drop=True), label="wy")
-    plt.plot(gyro["wz"].reset_index(drop=True), label="wz")
+    plt.plot(gyro["t"], gyro["wx"], label="wx")
+    plt.plot(gyro["t"], gyro["wy"], label="wy")
+    plt.plot(gyro["t"], gyro["wz"], label="wz")
+    
     plt.title("Gyroscope")
     plt.xlabel("Time [s]")
     plt.ylabel("rad/s")
@@ -72,11 +74,13 @@ def plot_trials(csv_file , runs=None, title=""):
 
     # GPS speed
     plt.subplot(2, 2, 3)
-    plt.plot(gps["t"].reset_index(drop=True), gps["v_kmh"].reset_index(drop=True), label="speed")
+    plt.plot(gps["t"], gps["v_kmh"], label="speed")
+    
     plt.title("GPS speed")
     plt.xlabel("Time [s]")
     plt.ylabel("Speed [km/h]")
-
+    plt.legend()
+    plt.grid(True)
 
     # detect trials and plot as shaded areas
     runs = detect_trials(gps, maneuver)
@@ -113,7 +117,6 @@ def plot_trials(csv_file , runs=None, title=""):
 
 def plot_cm(cm_files, real_files, cm_signal, real_signal, normalize_time=True, labels=["", ""]):
     
-
     fig, axes = plt.subplots(2, 1, figsize=(12, 9), sharex=False)
     fig.suptitle(f"CarMaker vs Real - {real_signal}")
 
@@ -122,7 +125,7 @@ def plot_cm(cm_files, real_files, cm_signal, real_signal, normalize_time=True, l
         real = pd.read_csv(real_file)
 
         cm_t = cm["Time [s]"] - cm["Time [s]"].iloc[0]
-        real_t = real["t"] - real["t"].iloc[0]
+        real_t = real["t"] 
 
         if normalize_time:
             cm_t = cm_t / cm_t.max()
@@ -132,8 +135,8 @@ def plot_cm(cm_files, real_files, cm_signal, real_signal, normalize_time=True, l
             xlabel = "Time [s]"
 
         axes[0].plot(cm_t, cm[cm_signal], label=label)
-        axes[1].plot(real_t, real[real_signal], label=label)
-        axes[1].plot(cm_t, cm[cm_signal], label="Real", alpha=0.5, linestyle="--")
+        axes[1].plot(real_t,real[real_signal], label=label)
+        #axes[1].plot(cm_t, cm[cm_signal], label="Carmaker", alpha=0.5, linestyle="--")
 
     axes[0].set_title("CarMaker")
     axes[0].set_ylabel(cm_signal)
@@ -149,28 +152,5 @@ def plot_cm(cm_files, real_files, cm_signal, real_signal, normalize_time=True, l
     plt.tight_layout()
     plt.show()
 
-if __name__ == "__main__":
-    
-    plot_trials(
-        csv_file="data/raw/opendlv/ts_1778674201.csv",
-        title="all"
-    )
-    
-    cm_files = [
-        "data/carmaker/acc_brake_soft.csv",
-        "data/carmaker/acc_brake_medium.csv",
-        "data/carmaker/acc_brake_hard.csv",
-    ]
 
-    real_files = [
-        "data/filtered/acc_brake/soft/acc_brake_soft_trial01.csv",
-        "data/filtered/acc_brake/medium/acc_brake_medium_trial01.csv"
-    ]
-
-    # plot_cm(
-    #     cm_files=cm_files,
-    #     real_files=real_files,
-    #     cm_signal="Speed [km/h]",
-    #     real_signal="v_kmh",
-    #     labels=["soft","hard"]
-    # )
+    

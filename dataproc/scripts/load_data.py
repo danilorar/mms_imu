@@ -63,15 +63,19 @@ def load_imu(csv_path_input):
     gps_raw["x"], gps_raw["y"] = gps_to_xy(gps_raw) 
  
     # common time reference
-    acc_raw = acc_raw.sort_values("time").reset_index(drop=True)
-    gyro_raw = gyro_raw.sort_values("time").reset_index(drop=True)
-    gps_raw = gps_raw.sort_values("time").reset_index(drop=True)
+    acc_raw["timestamp"] = acc_raw["time"] + acc_raw["idx"] / 1e6
+    gyro_raw["timestamp"] = gyro_raw["time"] + gyro_raw["idx"] / 1e6
+    gps_raw["timestamp"] = gps_raw["time"]
 
-    t0 = min(acc_raw["time"].min(),gyro_raw["time"].min(),gps_raw["time"].min())
+    acc_raw = acc_raw.sort_values("timestamp").reset_index(drop=True)
+    gyro_raw = gyro_raw.sort_values("timestamp").reset_index(drop=True)
+    gps_raw = gps_raw.sort_values("timestamp").reset_index(drop=True)
 
-    acc_raw["t"] = acc_raw["time"] - t0
-    gyro_raw["t"] = gyro_raw["time"] - t0
-    gps_raw["t"] = gps_raw["time"] - t0
+    t0 = min(acc_raw["timestamp"].min(), gyro_raw["timestamp"].min(), gps_raw["timestamp"].min())
+
+    acc_raw["t"] = acc_raw["timestamp"] - t0
+    gyro_raw["t"] = gyro_raw["timestamp"] - t0
+    gps_raw["t"] = gps_raw["timestamp"] - t0
     
     # combine into one dataframe imu based on "sensor"
     acc = pd.DataFrame({
@@ -108,15 +112,3 @@ def load_imu(csv_path_input):
     imu = pd.concat([acc, gyro, gps], ignore_index=True)
     
     return imu
-
-if __name__ == "__main__":
-
-    from plot_data import plot_trials
-    import matplotlib.pyplot as plt
-    # plt data to see if imu_data is correct 
-    
-    input_csv = "data/raw/opendlv/ts_1778675255.csv"
-    load_imu(input_csv)
-    
-    plot_trials(input_csv, title="all") 
-    plt.show()
